@@ -1,11 +1,9 @@
-import org.apache.spark.sql.types.StructType
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql._
-import org.apache.spark.sql.types._
+import org.apache.spark.sql.types.StructType
 
 
-object SparkStreamingApp extends App {
+object QuoteStreamApp extends App {
 
   val spark = SparkSession
     .builder()
