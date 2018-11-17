@@ -22,5 +22,6 @@ project/project/
 project/target/
 target/
 project/*
+checkpoint/
 .scala_dependencies
 .worksheet

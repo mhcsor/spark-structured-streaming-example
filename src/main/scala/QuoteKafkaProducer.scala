@@ -36,7 +36,7 @@ object QuoteKafkaProducer extends App {
       }
     })
 
-    TimeUnit.MILLISECONDS.sleep(500)
+    TimeUnit.MILLISECONDS.sleep(150)
 
   }
 }

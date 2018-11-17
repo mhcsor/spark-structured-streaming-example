@@ -1,5 +1,6 @@
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.streaming.{DataStreamWriter, Trigger}
 import org.apache.spark.sql.types.StructType
 
 
@@ -11,6 +12,8 @@ object QuoteStreamApp extends App {
     .appName("Spark Streaming Example")
     .getOrCreate()
 
+  import spark.implicits._
+
   val df = spark
     .readStream
     .format("kafka")
@@ -19,13 +22,13 @@ object QuoteStreamApp extends App {
     .option("startingOffsets", "earliest")
     .load()
 
-  import spark.implicits._
-
   val quoteType = new StructType()
     .add("ID", "integer")
     .add("title", "string")
     .add("content", "string")
     .add("link", "string")
+
+  import scala.concurrent.duration._
 
   df
     .selectExpr("CAST(value AS STRING)")
@@ -37,9 +40,17 @@ object QuoteStreamApp extends App {
     .groupBy($"words")
     .count()
     .writeStream
+    .queryName("word_count")
     .outputMode("update")
+    .trigger(Trigger.ProcessingTime(10.seconds))
+    .option("checkpointLocation", "checkpoint")
     .format("console")
     .start()
     .awaitTermination()
+
+  // shutdown hook
+  sys.ShutdownHookThread {
+    spark.stop
+  }
 
 }
